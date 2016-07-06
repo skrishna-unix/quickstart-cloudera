@@ -1,0 +1,22 @@
+{
+  "name": "RHELami",
+  "version": "1.0.0",
+  "description": "Find RHEL ami for given region and version",
+  "main": "find.js",
+  "dependencies": {
+    "minimist": "^1.1.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node RHELami.js"
+  },
+  "keywords": [
+    "aws",
+    "ec2",
+    "ami",
+    "RHEL"
+  ],
+  "author": "Karthik Krishnan",
+  "license": "MIT"
+}
