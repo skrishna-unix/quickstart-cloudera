@@ -24,7 +24,7 @@ tests:
     template_file: Template1-AWS-Infrastructure-Cloudera.template
     parameter_input: Template1-AWS-Infrastructure-Cloudera-ap-northeast-1.json
     regions:
-    - ap-northeast-2
+    - ap-northeast-1
   ap-northeast-2:
     template_file: Template1-AWS-Infrastructure-Cloudera.template
     parameter_input: Template1-AWS-Infrastructure-Cloudera-ap-northeast-2.json
