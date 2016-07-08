@@ -14,8 +14,7 @@ global:
     - us-east-1
     - us-west-1
     - us-west-2
-  cis3bucket:  s3://quickstart-ci-bucket
- 
+
 tests:
   quickstart-clouderat1:
     template_file: quickstart-cloudera-example1.template
