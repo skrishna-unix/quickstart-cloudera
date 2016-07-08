@@ -14,7 +14,6 @@ global:
     - us-east-1
     - us-west-1
     - us-west-2
- 
 tests:
   cloudera:
     template_file: Template1-AWS-Infrastructure-Cloudera.template
