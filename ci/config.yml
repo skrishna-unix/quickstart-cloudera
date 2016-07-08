@@ -35,11 +35,11 @@ tests:
     parameter_input: Template1-AWS-Infrastructure-Cloudera-ap-southeast-1.json
     regions:
     - ap-southeast-1
-  eu-central:
+  eu-central-1:
     template_file: Template1-AWS-Infrastructure-Cloudera.template
-    parameter_input: Template1-AWS-Infrastructure-Cloudera-eu-central.json
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-eu-central-1.json
     regions:
-    - eu-central
+    - eu-central-1
   eu-west-1:
     template_file: Template1-AWS-Infrastructure-Cloudera.template
     parameter_input: Template1-AWS-Infrastructure-Cloudera-eu-west-1.json
