@@ -15,8 +15,48 @@ global:
     - us-west-1
     - us-west-2
 tests:
-  cloudera:
+  us-west-1:
     template_file: Template1-AWS-Infrastructure-Cloudera.template
     parameter_input: Template1-AWS-Infrastructure-Cloudera-us-west-1.json
     regions:
     - us-west-1
+  ap-northeast-1:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-ap-northeast-1.json
+    regions:
+    - ap-northeast-2
+  ap-northeast-2:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-ap-northeast-2.json
+    regions:
+    - ap-northeast-2
+  ap-southeast-1:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-ap-southeast-1.json
+    regions:
+    - ap-southeast-1
+  eu-central:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-eu-central.json
+    regions:
+    - eu-central
+  eu-west-1:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-eu-west-1.json
+    regions:
+    - eu-west-1
+  sa-east-1:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-sa-east-1.json
+    regions:
+    - sa-east-1
+  us-east-1:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-us-east-1.json
+    regions:
+    - us-east-1
+  us-west-2:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera-us-west-2.json
+    regions:
+    - us-west-2

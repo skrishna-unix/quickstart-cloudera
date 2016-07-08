@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "tonynv"
+  }, 
+  {
+    "ParameterKey": "AvailabilityZone",
+    "ParameterValue": "ap-southeast-2c"
+  },
+  {
+    "ParameterKey": "RemoteAccessCIDR",
+    "ParameterValue": "1.1.1.1/32"
+  }
+]
