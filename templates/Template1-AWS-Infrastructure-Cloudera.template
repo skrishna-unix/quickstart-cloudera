@@ -21,11 +21,10 @@
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
 		},
 		"RemoteAccessCIDR": {
-			"Description": "IP CIDR from which you are likely to SSH into the ClusterLauncher instance. You can add rules later by modifying the created security groups e.g. 54.32.98.160/32.",
+			"Description": "IP CIDR from which you are likely to SSH into the ClusterLauncher instance. Note: a value of 0.0.0.0/0 will allow access from ANY ip address",
 			"Type": "String",
 			"MinLength": "9",
 			"MaxLength": "18",
-			"Default": "0.0.0.0/0",
 			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
 			"ConstraintDescription": "must be a valid CIDR range of the form x.x.x.x/x."
 		},
