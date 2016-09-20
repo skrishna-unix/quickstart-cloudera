@@ -5,7 +5,7 @@
   }, 
   {
     "ParameterKey": "AvailabilityZone",
-    "ParameterValue": "ap-southheast-1b"
+    "ParameterValue": "ap-southheast-1a"
   },
   {
     "ParameterKey": "RemoteAccessCIDR",

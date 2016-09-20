@@ -1,0 +1,161 @@
+name: C5-Reference-AWS
+provider {
+    type: aws
+    region: region-REPLACE-ME
+    subnetId: subnet-REPLACE-ME
+    securityGroupsIds: sg-REPLACE-ME
+    instanceNamePrefix: cloudera-director
+}
+ssh {
+}
+instances {
+  m42x {
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+echo 'Hello World!'
+exit 0
+"""
+  }
+  m44x {
+    type: m4.4xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  c34x {
+    type: c3.4xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  c38x {
+    type: c3.8xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  c44x {
+    type: c4.4xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  i2x {
+    type: i2.xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  i22x {
+    type: i2.2xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  d2x {
+    type: d2.xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  d22x {
+    type: d2.2xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+  d24x {
+    type: d2.4xlarge
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+    type: t2.large
+    image: ami-HVM-REPLACE-ME
+    tags {
+      owner: ${?USER}
+    }
+  }
+}
+cloudera-manager {
+    instance: ${instances.m42x} {
+        tags {
+            application: "Cloudera Manager 5"
+        }
+    }
+    enableEnterpriseTrial: true
+}
+cluster {
+    products {
+      CDH: 5
+      KAFKA: 2
+    }
+    services: [HDFS, YARN, ZOOKEEPER, HBASE, HIVE, HUE, OOZIE, SENTRY, SPARK_ON_YARN, KAFKA]
+    masters {
+      count: 1
+      instance: ${instances.i22x} {
+        tags {
+          group: master
+        }
+      }
+      roles {
+        HDFS: [NAMENODE, SECONDARYNAMENODE]
+        YARN: [RESOURCEMANAGER, JOBHISTORY]
+        ZOOKEEPER: [SERVER]
+        HBASE: [MASTER]
+        HIVE: [HIVESERVER2, HIVEMETASTORE]
+        HUE: [HUE_SERVER]
+        OOZIE: [OOZIE_SERVER]
+        SENTRY: [SENTRY_SERVER]
+        SPARK_ON_YARN: [SPARK_YARN_HISTORY_SERVER]
+        KAFKA: [KAFKA_BROKER]
+      }
+    }
+    workers {
+      count: 9
+      minCount: 5
+      instance: ${instances.d22x} {
+        tags {
+          group: worker
+        }
+      }
+      roles {
+        HDFS: [DATANODE]
+        YARN: [NODEMANAGER]
+        HBASE: [REGIONSERVER]
+      }
+    }
+    gateways {
+      count: 1
+      instance: ${instances.t2l} {
+        tags {
+          group: gateway
+        }
+      }
+      roles {
+        HIVE: [GATEWAY]
+        SPARK_ON_YARN: [GATEWAY]
+      }
+    }
+echo 'Hello World!'
+exit 0
+    """,
+print 'Hello again!'
+    """]
+echo 'Goodbye World!'
+exit 0
+    """,
+print 'Goodbye again!'
+        """]
+}

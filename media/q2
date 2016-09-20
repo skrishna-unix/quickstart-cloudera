@@ -1,0 +1,97 @@
+name: C5-Reference-AWS
+provider {
+    type: aws
+    publishAccessKeys: true
+    region: region-REPLACE-ME
+    keyName: keyName-REPLACE-ME
+    subnetId: subnetId-REPLACE-ME
+    securityGroupsIds: securityGroupsIds-REPLACE-ME
+    instanceNamePrefix: cloudera-director
+}
+ssh {
+}
+instances {
+    i24 {
+        image: hvm-ami-REPLACE-ME
+        tags {
+            owner: ${?USER}
+        }
+echo 'Hello World!'
+exit 0
+"""
+    }
+    hs18 {
+        image: hvm-ami-REPLACE-ME
+        tags {
+            owner: ${?USER}
+        }
+    }
+    m1l {
+        image: pvm-ami-REPLACE-ME
+        tags {
+            owner: ${?USER}
+        }
+    }
+    c38xl {
+        image: hvm-ami-REPLACE-ME
+        tags {
+            owner: ${?USER}
+        }
+    }
+}
+cloudera-manager {
+    instance: ${instances.i24} {
+        tags {
+            application: "Cloudera Manager 5"
+        }
+    }
+    enableEnterpriseTrial: true
+}
+cluster {
+    products {
+      CDH: 5
+    }
+    services: [HDFS, YARN, ZOOKEEPER, HBASE, HIVE, HUE, OOZIE]
+    masters {
+      count: 1
+      instance: ${instances.i24} {
+        tags {
+          group: master
+        }
+      }
+      roles {
+        HDFS: ${roles.HDFS_MASTERS}
+        YARN: ${roles.YARN_MASTERS}
+        ZOOKEEPER: ${roles.ZOOKEEPER_MASTERS}
+        HBASE: ${roles.HBASE_MASTERS}
+        HIVE: ${roles.HIVE_MASTERS}
+        HUE: ${roles.HUE_MASTERS}
+        OOZIE: ${roles.OOZIE_MASTERS}
+      }
+    }
+    workers {
+      count: count-REPLACE-ME
+      minCount: count-REPLACE-ME
+      instance: ${instances.c38xl} {
+        tags {
+          group: worker
+        }
+      }
+      roles {
+        HDFS: ${roles.HDFS_WORKERS}
+        YARN: ${roles.YARN_WORKERS}
+        HBASE: ${roles.HBASE_WORKERS}
+      }
+    }
+    gateways {
+      count: 1
+      instance: ${instances.m1l} {
+        tags {
+          group: gateway
+        }
+      }
+      roles {
+        HIVE: [GATEWAY]
+      }
+    }
+}
