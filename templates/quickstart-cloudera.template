@@ -45,14 +45,13 @@
 		"ClusterLauncherType": {
 			"Description": "Amazon EC2 instance type for the ClusterLauncher Instance.",
 			"Type": "String",
-			"Default": "m3.large",
+			"Default": "m4.large",
 			"AllowedValues": [
 				"t2.small",
-				"m1.large",
-				"m1.xlarge",
-				"m2.xlarge",
-				"m3.large",
-				"m3.xlarge"
+				"t2.medium",
+				"t2.large",
+				"m4.xlarge",
+				"m4.large"	
 			]
 		}
 	},
@@ -180,7 +179,7 @@
 				}
 			}
 		},
-		"S3Endpoint" : {
+		"ClusterLauncherInstance" : {
 		  "Type" : "AWS::EC2::VPCEndpoint",
 		  "Properties" : {
 		    "PolicyDocument" : {
@@ -725,7 +724,7 @@
 								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
 								"HADOOPINSTANCE-TYPE-CFN-REPLACE",
 								"=",
-								"m3.2xlarge",
+								"m4.large",
 								" /home/ec2-user/cloudera/download.sh \n",
 								"/bin/sh /home/ec2-user/cloudera/download.sh",
 								" -b ", {
