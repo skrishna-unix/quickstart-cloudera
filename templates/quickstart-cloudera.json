@@ -13,7 +13,7 @@
     },
     {
         "ParameterKey": "KeyName",
-        "ParameterValue": "home"
+        "ParameterValue": "cikey"
     },
     {
         "ParameterKey": "PrivSubCIDR",
