@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "ClusterLauncherType",
-        "ParameterValue": "m3.large"
+        "ParameterValue": "m4.large"
     },
     {
         "ParameterKey": "KeyName",
