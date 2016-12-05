@@ -90,8 +90,14 @@
 			"us-east-1": {
 				"AMI": "ami-dbc96ab0"
 			},
+			"us-east-2": {
+				"AMI": "ami-96164cf3"
+			},
 			"ap-northeast-1": {
 				"AMI": "ami-4eee514e"
+			},
+			"ap-northeast-2": {
+				"AMI": "ami-86c10fe8 "
 			},
 			"eu-west-1": {
 				"AMI": "ami-a42a7bd3"
