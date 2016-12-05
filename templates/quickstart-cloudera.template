@@ -88,6 +88,9 @@
 			"ap-southeast-2": {
 				"NAME": "ap-southeast-2.compute.internal"
 			},
+			"ap-south-1": {
+				"NAME": "ap-south-1.compute.internal"
+			},
 			"ap-southeast-1": {
 				"NAME": "ap-southeast-1.compute.internal"
 			}
@@ -103,10 +106,13 @@
 				"AMI": "ami-4eee514e"
 			},
 			"ap-northeast-2": {
-				"AMI": "ami-86c10fe8 "
+				"AMI": "ami-86c10fe8"
 			},
 			"eu-west-1": {
 				"AMI": "ami-a42a7bd3"
+			},
+			"ap-south-1": {
+				"AMI": "ami-fcbfd593"
 			},
 			"ap-southeast-1": {
 				"AMI": "ami-56e2ee04"
