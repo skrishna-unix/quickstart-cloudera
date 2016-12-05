@@ -8,8 +8,8 @@
 			"Default": "10.0.0.0/16",
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
 		},
-		"DMZCIDR": {
-			"Description": "CIDR Block for the Public DMZ Subnet located in the new VPC.",
+		"PublicCIDR": {
+			"Description": "CIDR Block for the Public Public Subnet located in the new VPC.",
 			"Type": "String",
 			"Default": "10.0.2.0/24",
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
@@ -38,20 +38,6 @@
 			"Type": "String",
 			"Default": "quickstart-reference/cloudera/latest"
 		},
-		"NATInstanceType": {
-			"Description": "Amazon EC2 instance type for the NAT Instances.",
-			"Type": "String",
-			"Default": "m3.medium",
-			"AllowedValues": [
-				"m3.medium",
-				"t2.small",
-				"t2.medium",
-				"m1.small",
-				"m1.medium",
-				"m1.large",
-				"m1.xlarge"
-			]
-		},
 		"AvailabilityZone": {
 			"Description": "Pick an AvailabilityZone for Cloudera Subnet",
 			"Type": "AWS::EC2::AvailabilityZone::Name"
@@ -71,35 +57,6 @@
 		}
 	},
 	"Mappings": {
-		"AWSNATAMI": {
-			"eu-central-1": {
-				"AMI": "ami-46073a5b"
-			},
-			"sa-east-1": {
-				"AMI": "ami-fbfa41e6"
-			},
-			"ap-northeast-1": {
-				"AMI": "ami-03cf3903"
-			},
-			"eu-west-1": {
-				"AMI": "ami-6975eb1e"
-			},
-			"us-east-1": {
-				"AMI": "ami-303b1458"
-			},
-			"us-west-1": {
-				"AMI": "ami-7da94839"
-			},
-			"us-west-2": {
-				"AMI": "ami-69ae8259"
-			},
-			"ap-southeast-2": {
-				"AMI": "ami-e7ee9edd"
-			},
-			"ap-southeast-1": {
-				"AMI": "ami-b49dace6"
-			}
-		},
 		"DomainNameMapping": {
 			"eu-central-1": {
 				"NAME": "eu-central-1.compute.internal"
@@ -159,56 +116,6 @@
 			}
 		}
 	},
-	"Outputs": {
-		"ClusterLauncherEIP": {
-			"Description": "ClusterLauncher Server located in DMZ Subnet",
-			"Value": {
-				"Fn::Join": [
-					"", [
-						"ClusterLauncher Server IP:", {
-							"Fn::GetAtt": [
-								"ClusterLauncherInstance",
-								"PublicIp"
-							]
-						}
-					]
-				]
-			}
-		},
-		"NATInstanceEIP": {
-			"Description": "NAT Instance located in DMZ Subnet",
-			"Value": {
-				"Fn::Join": [
-					"", [
-						"NAT Server IP:", {
-							"Fn::GetAtt": [
-								"NATInstance",
-								"PublicIp"
-							]
-						}
-					]
-				]
-			}
-		},
-		"VPCID": {
-			"Description": "VPC-ID of the newly created VPC",
-			"Value": {
-				"Ref": "VPC"
-			}
-		},
-		"PublicSubnet": {
-			"Description": "Subnet-ID of the Public or DMZ Subnet",
-			"Value": {
-				"Ref": "DMZSubnet"
-			}
-		},
-		"PrivateSubnet": {
-			"Description": "Subnet-ID of the Private Subnet where Cloudera Cluster will be deployed",
-			"Value": {
-				"Ref": "ClouderaSubnet"
-			}
-		}
-	},
 	"Resources": {
 		"ClouderaDHCP": {
 			"Type": "AWS::EC2::DHCPOptions",
@@ -255,6 +162,22 @@
 				}
 			}
 		},
+		"S3Endpoint" : {
+		  "Type" : "AWS::EC2::VPCEndpoint",
+		  "Properties" : {
+		    "PolicyDocument" : {
+		      "Statement":[{
+		        "Effect":"Allow",
+		        "Principal": "*",
+		        "Action":"*",
+		        "Resource":"*"
+		      }]
+		    },
+		    "RouteTableIds" : [ {"Ref" : "ClouderaClusterRouteTable"}, {"Ref" : "PublicRouteTable"} ],
+		    "ServiceName" : { "Fn::Join": [ "", [ "com.amazonaws.", { "Ref": "AWS::Region" }, ".s3" ] ] },
+		    "VpcId" : {"Ref" : "VPC"}
+		  }
+		},
 		"InternetGateway": {
 			"Type": "AWS::EC2::InternetGateway"
 		},
@@ -290,18 +213,18 @@
 				}
 			}
 		},
-		"DMZSubnet": {
+		"PublicSubnet": {
 			"Type": "AWS::EC2::Subnet",
 			"Properties": {
 				"VpcId": {
 					"Ref": "VPC"
 				},
 				"CidrBlock": {
-					"Ref": "DMZCIDR"
+					"Ref": "PublicCIDR"
 				},
 				"Tags": [{
 					"Key": "Application",
-					"Value": "NAT and ClusterLauncher (Cloudera)"
+					"Value": "ClusterLauncher (Cloudera)"
 				}, {
 					"Key": "Network",
 					"Value": "Public"
@@ -311,131 +234,26 @@
 				}
 			}
 		},
-		"NATInstance": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"Tags": [{
-					"Key": "Name",
-					"Value": "NAT Instance (Cloudera Public Subnet)"
-				}],
-				"InstanceType": {
-					"Ref": "NATInstanceType"
-				},
-				"KeyName": {
-					"Ref": "KeyName"
-				},
-				"NetworkInterfaces": [{
-					"NetworkInterfaceId": {
-						"Ref": "NATInterface"
-					},
-					"DeviceIndex": "0"
-				}],
-				"ImageId": {
-					"Fn::FindInMap": [
-						"AWSNATAMI", {
-							"Ref": "AWS::Region"
-						},
-						"AMI"
-					]
-				}
-			}
-		},
-		"NATEIP": {
-			"Type": "AWS::EC2::EIP",
-			"Properties": {
-				"Domain": "vpc"
-			}
-		},
-		"NATInterface": {
-			"Type": "AWS::EC2::NetworkInterface",
-			"Properties": {
-				"SubnetId": {
-					"Ref": "DMZSubnet"
-				},
-				"Description": "External interface for the NAT instance",
-				"GroupSet": [{
-					"Ref": "NATSecurityGroup"
-				}],
-				"SourceDestCheck": "false",
-				"Tags": [{
-					"Key": "Network",
-					"Value": "Public (Cloudera)"
-				}]
-			}
-		},
-		"AssociateInterfaceNAT": {
-			"Type": "AWS::EC2::EIPAssociation",
-			"Properties": {
-				"AllocationId": {
-					"Fn::GetAtt": [
-						"NATEIP",
-						"AllocationId"
-					]
-				},
-				"NetworkInterfaceId": {
-					"Ref": "NATInterface"
-				}
-			}
-		},
-		"NATSecurityGroup": {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties": {
-				"GroupDescription": "Enable internal access to the NAT device",
-				"VpcId": {
-					"Ref": "VPC"
-				},
-				"SecurityGroupIngress": [{
-					"IpProtocol": "tcp",
-					"FromPort": "80",
-					"ToPort": "80",
-					"CidrIp": {
-						"Ref": "VPCCIDR"
-					}
-				}, {
-					"IpProtocol": "udp",
-					"FromPort": "123",
-					"ToPort": "123",
-					"CidrIp": "0.0.0.0/0"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": {
-						"Ref": "VPCCIDR"
-					}
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "22",
-					"ToPort": "22",
-					"CidrIp": {
-						"Ref": "RemoteAccessCIDR"
-					}
-				}],
-				"SecurityGroupEgress": [{
-					"IpProtocol": "tcp",
-					"FromPort": "80",
-					"ToPort": "80",
-					"CidrIp": "0.0.0.0/0"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "0.0.0.0/0"
-				}, {
-					"IpProtocol": "udp",
-					"FromPort": "123",
-					"ToPort": "123",
-					"CidrIp": "0.0.0.0/0"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "22",
-					"ToPort": "22",
-					"CidrIp": {
-						"Ref": "PrivSubCIDR"
-					}
-				}]
-			}
-		},
+		"NAT": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "NATEIP",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet"
+        }
+      }
+    },
+    "NATEIP": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
 		"ClusterLauncherSecurityGroup": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
@@ -467,7 +285,7 @@
 					"FromPort": "1",
 					"ToPort": "65535",
 					"CidrIp": {
-						"Ref": "DMZCIDR"
+						"Ref": "PublicCIDR"
 					}
 				}],
 				"SecurityGroupEgress": [{
@@ -493,7 +311,7 @@
 			"Type": "AWS::EC2::NetworkInterface",
 			"Properties": {
 				"SubnetId": {
-					"Ref": "DMZSubnet"
+					"Ref": "PublicSubnet"
 				},
 				"Description": "Interface for ClusterLauncher Instance",
 				"GroupSet": [{
@@ -532,7 +350,7 @@
 				}]
 			}
 		},
-		"DMZRouteTable": {
+		"PublicRouteTable": {
 			"Type": "AWS::EC2::RouteTable",
 			"Properties": {
 				"VpcId": {
@@ -548,7 +366,7 @@
 			"Type": "AWS::EC2::Route",
 			"Properties": {
 				"RouteTableId": {
-					"Ref": "DMZRouteTable"
+					"Ref": "PublicRouteTable"
 				},
 				"DestinationCidrBlock": "0.0.0.0/0",
 				"GatewayId": {
@@ -563,8 +381,8 @@
 					"Ref": "ClouderaClusterRouteTable"
 				},
 				"DestinationCidrBlock": "0.0.0.0/0",
-				"InstanceId": {
-					"Ref": "NATInstance"
+				"NatGatewayId": {
+					"Ref": "NAT"
 				}
 			}
 		},
@@ -595,10 +413,10 @@
 			"Type": "AWS::EC2::SubnetRouteTableAssociation",
 			"Properties": {
 				"SubnetId": {
-					"Ref": "DMZSubnet"
+					"Ref": "PublicSubnet"
 				},
 				"RouteTableId": {
-					"Ref": "DMZRouteTable"
+					"Ref": "PublicRouteTable"
 				}
 			}
 		},
@@ -850,7 +668,7 @@
 								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
 								"PUBLICSUBNETID-CFN-REPLACE",
 								"=", {
-									"Ref": "DMZSubnet"
+									"Ref": "PublicSubnet"
 								},
 								" /home/ec2-user/cloudera/download.sh \n",
 								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
@@ -923,6 +741,47 @@
 					"Ref": "WebServerWaitHandle"
 				},
 				"Timeout": "9000"
+			}
+		}
+	},
+	"Outputs": {
+		"ClusterLauncherEIP": {
+			"Description": "ClusterLauncher Server located in Public Subnet",
+			"Value": {
+				"Fn::Join": [
+					"", [
+						"ClusterLauncher Server IP:", {
+							"Fn::GetAtt": [
+								"ClusterLauncherInstance",
+								"PublicIp"
+							]
+						}
+					]
+				]
+			}
+		},
+		"NATGatewayEIP": {
+			"Description": "NAT Gateway located in the public Subnet",
+			"Value": {
+					"Ref": "NATEIP"
+			}
+		},
+		"VPCID": {
+			"Description": "VPC ID of the newly created VPC",
+			"Value": {
+				"Ref": "VPC"
+			}
+		},
+		"PublicSubnet": {
+			"Description": "Subnet ID of the Public or Public Subnet",
+			"Value": {
+				"Ref": "PublicSubnet"
+			}
+		},
+		"PrivateSubnet": {
+			"Description": "Subnet-ID of the Private Subnet where Cloudera Cluster will be deployed",
+			"Value": {
+				"Ref": "ClouderaSubnet"
 			}
 		}
 	}

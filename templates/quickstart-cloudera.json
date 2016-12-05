@@ -1,0 +1,34 @@
+[
+    {
+        "ParameterKey": "AvailabilityZone",
+        "ParameterValue": "$[alfred_genaz_1]"
+    },
+    {
+        "ParameterKey": "BuildBucket",
+        "ParameterValue": "quickstart-reference/cloudera/latest"
+    },
+    {
+        "ParameterKey": "ClusterLauncherType",
+        "ParameterValue": "m3.large"
+    },
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "home"
+    },
+    {
+        "ParameterKey": "PrivSubCIDR",
+        "ParameterValue": "10.0.1.0/24"
+    },
+    {
+        "ParameterKey": "PublicCIDR",
+        "ParameterValue": "10.0.2.0/24"
+    },
+    {
+        "ParameterKey": "RemoteAccessCIDR",
+        "ParameterValue": "10.0.0.0/32"
+    },
+    {
+        "ParameterKey": "VPCCIDR",
+        "ParameterValue": "10.0.0.0/16"
+    }
+]
