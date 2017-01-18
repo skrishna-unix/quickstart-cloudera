@@ -17,6 +17,9 @@ global:
     - us-west-1
     - us-west-2
 tests:
-  us-west-1:
-    template_file: quickstart-cloudera.template
-    parameter_input: quickstart-cloudera.json
+  withVPC:
+    template_file: Template1-AWS-Infrastructure-Cloudera.template
+    parameter_input: Template1-AWS-Infrastructure-Cloudera.json
+    regions:
+    - us-east-1
+   
