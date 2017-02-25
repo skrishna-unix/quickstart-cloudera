@@ -1,0 +1,22 @@
+[
+    {
+        "ParameterKey": "AvailabilityZones",
+        "ParameterValue": "$[alfred_genaz_2]"
+    },
+    {
+        "ParameterKey": "BuildBucket",
+        "ParameterValue": "sshvans-qs/quickstart-cloudera"
+    },
+    {
+        "ParameterKey": "ClusterLauncherType",
+        "ParameterValue": "m4.large"
+    },
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "sshvans"
+    },
+    {
+        "ParameterKey": "RemoteAccessCIDR",
+        "ParameterValue": "10.0.0.0/32"
+    }
+]
