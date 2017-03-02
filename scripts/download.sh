@@ -201,8 +201,8 @@ do
 	sed -i "s/region-REPLACE-ME/${AWS_DEFAULT_REGION}/g" ${AWS_CONF_FILE}
 	sed -i "s/privatesubnetId-REPLACE-ME/${AWS_PRIVATESUBNETID}/g" ${AWS_CONF_FILE}
 	sed -i "s/publicsubnetId-REPLACE-ME/${AWS_PUBLICSUBNETID}/g" ${AWS_CONF_FILE}
-	sed -i "s/subnet-REPLACE-ME/${AWS_SUBNETID}/g" ${AWS_CONF_FILE}
-	sed -i "s/sg-REPLACE-ME/${AWS_SECURITYGROUPIDS}/g" ${AWS_CONF_FILE}
+	sed -i "s/subnetId-REPLACE-ME/${AWS_SUBNETID}/g" ${AWS_CONF_FILE}
+	sed -i "s/securityGroupsIds-REPLACE-ME/${AWS_SECURITYGROUPIDS}/g" ${AWS_CONF_FILE}
 	sed -i "s/keyName-REPLACE-ME/${AWS_KEYNAME}/g" ${AWS_CONF_FILE}
 	sed -i "s/type-REPLACE-ME/${AWS_CDH_INSTANCE}/g" ${AWS_CONF_FILE}
 	sed -i "s/count-REPLACE-ME/${AWS_CDH_COUNT}/g" ${AWS_CONF_FILE}
