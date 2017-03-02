@@ -1,6 +1,64 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Description": "(000A) AWS Infrastructure Deployment for Cloudera Hadoop",
+	"Metadata": {
+		"AWS::CloudFormation::Interface": {
+    		"ParameterGroups": [
+        		{
+                    "Label": {
+                        "default": " Cloudera Launcher Setup"
+                    },
+                    "Parameters": [
+                      	"VPC",
+                        "PrivateSubnet",
+                        "PublicSubnet",
+                        "PublicCIDR",
+                        "PrivSubCIDR",
+                        "RemoteAccessCIDR",
+                        "KeyName",
+                        "ClusterLauncherType"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Quick Start Configuration"
+                    },
+                    "Parameters": [
+                        "BuildBucket"
+                    ]
+                }
+           	],
+            "ParameterLabels": {
+                "KeyName": {
+                    "default": "Key Name"
+                },
+                "PublicSubnet": {
+                    "default": "Public Subnet Id"
+                },
+                "PrivateSubnet": {
+                    "default": "Private Subnet Id"
+                },
+                "PublicCIDR": {
+                    "default": "Public Subnet CIDR"
+                },
+                "PrivSubCIDR": {
+                    "default": "Private Subnet CIDR"
+                },
+                "BuildBucket": {
+                    "default": "Quick Start S3 Bucket Path"
+                },
+                "RemoteAccessCIDR": {
+                    "default": "Permitted IP range"
+                },
+                "VPC": {
+                    "default": "VPC Id"
+                },
+                "ClusterLauncherType": {
+                    "default": "Cluster Launcher Instance Type"
+                }
+            }
+        }
+    },
 	"Parameters": {
 		"VPC": {
 			"Description": "VPC ID",
@@ -476,15 +534,9 @@
 		"ClusterLauncherEIP": {
 			"Description": "ClusterLauncher Server located in Public Subnet",
 			"Value": {
-				"Fn::Join": [
-					"", [
-						"ClusterLauncher Server IP:", {
-							"Fn::GetAtt": [
-								"ClusterLauncherInstance",
-								"PublicIp"
-							]
-						}
-					]
+				"Fn::GetAtt": [
+					"ClusterLauncherInstance",
+					"PublicIp"
 				]
 			}
 		}

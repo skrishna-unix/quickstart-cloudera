@@ -1,6 +1,79 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Description": "(000A) AWS Infrastructure Deployment for Cloudera Hadoop",
+ 	"Metadata": {
+		"AWS::CloudFormation::Interface": {
+    		"ParameterGroups": [
+        		{
+                    "Label": {
+                        "default": " VPC Network Configuration"
+                    },
+                    "Parameters": [
+                        "AvailabilityZones",
+                        "VPCCIDR",
+                        "PrivateSubnet1CIDR",
+                        "PrivateSubnet2CIDR",
+                        "PublicSubnet1CIDR",
+                        "PublicSubnet2CIDR",
+                        "NATInstanceType"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": " Cloudera Launcher Setup"
+                    },
+                    "Parameters": [
+                        "KeyName",
+                        "ClusterLauncherType",
+                        "RemoteAccessCIDR"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Quick Start Configuration"
+                    },
+                    "Parameters": [
+                        "BuildBucket"
+                    ]
+                }
+           	],
+            "ParameterLabels": {
+                "AvailabilityZones": {
+                    "default": "Availability Zones"
+                },
+                "KeyName": {
+                    "default": "Key Name"
+                },
+                "NATInstanceType": {
+                    "default": "NAT Instance Type"
+                },
+                "PrivateSubnet1CIDR": {
+                    "default": "Private Subnet 1 CIDR"
+                },
+                "PrivateSubnet2CIDR": {
+                    "default": "Private Subnet 2 CIDR"
+                },
+                "PublicSubnet1CIDR": {
+                    "default": "Public Subnet 1 CIDR"
+                },
+                "PublicSubnet2CIDR": {
+                    "default": "Public Subnet 2 CIDR"
+                },
+                "BuildBucket": {
+                    "default": "Quick Start S3 Bucket Path"
+                },
+                "RemoteAccessCIDR": {
+                    "default": "Permitted IP range"
+                },
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
+                },
+                "ClusterLauncherType": {
+                    "default": "Cluster Launcher Instance Type"
+                }
+            }
+        }
+    },
 	"Parameters": {
         "VPCCIDR": {
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
@@ -269,15 +342,9 @@
 		"ClusterLauncherEIP": {
 			"Description": "ClusterLauncher Server located in Public Subnet",
 			"Value": {
-				"Fn::Join": [
-					"", [
-						"ClusterLauncher Server IP:", {
-							"Fn::GetAtt": [
-								"ClouderaStack",
-								"Outputs.ClusterLauncherEIP"
-							]
-						}
-					]
+				"Fn::GetAtt": [
+					"ClouderaStack",
+					"Outputs.ClusterLauncherEIP"
 				]
 			}
 		},
