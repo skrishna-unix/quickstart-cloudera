@@ -75,13 +75,11 @@
 		"PublicCIDR": {
 			"Description": "CIDR Block for the Public Public Subnet located in the new VPC.",
 			"Type": "String",
-			"Default": "10.0.128.0/20",
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
 		},
 		"PrivSubCIDR": {
 			"Description": "CIDR Block for Private Subnet where Cloudera Hadoop will be deployed.",
 			"Type": "String",
-			"Default": "10.0.0.0/19",
 			"AllowedPattern": "[a-zA-Z0-9]+\\..+"
 		},
 		"RemoteAccessCIDR": {
@@ -94,7 +92,6 @@
 		},
 		"KeyName": {
 			"Type": "AWS::EC2::KeyPair::KeyName",
-			"Default": "home",
 			"Description": "Name of an existing EC2 KeyPair. ClusterLauncher instance will launch with this KeyPair."
 		},
 		"BuildBucket": {
