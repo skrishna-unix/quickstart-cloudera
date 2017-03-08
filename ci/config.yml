@@ -20,6 +20,4 @@ tests:
   withVPC:
     template_file: cloudera-master.template
     parameter_input: cloudera.json
-    regions:
-    - us-east-1
    
