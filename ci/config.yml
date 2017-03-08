@@ -18,8 +18,8 @@ global:
     - us-west-2
 tests:
   withVPC:
-    template_file: Template1-AWS-Infrastructure-Cloudera.template
-    parameter_input: Template1-AWS-Infrastructure-Cloudera.json
+    template_file: cloudera-master.template
+    parameter_input: cloudera.json
     regions:
     - us-east-1
    
