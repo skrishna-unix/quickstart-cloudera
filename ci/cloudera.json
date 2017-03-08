@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "KeyName",
-        "ParameterValue": "sshvans"
+        "ParameterValue": "cikey"
     },
     {
         "ParameterKey": "RemoteAccessCIDR",
