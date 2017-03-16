@@ -122,44 +122,53 @@
 		}
 	},
 	"Mappings": {
-		"ClusterLauncherAMI": {
-			"us-east-1": {
-				"AMI": "ami-dbc96ab0"
-			},
-			"us-east-2": {
-				"AMI": "ami-96164cf3"
-			},
-			"ap-northeast-1": {
-				"AMI": "ami-4eee514e"
-			},
-			"ap-northeast-2": {
-				"AMI": "ami-86c10fe8"
-			},
-			"eu-west-1": {
-				"AMI": "ami-a42a7bd3"
-			},
-			"ap-south-1": {
-				"AMI": "ami-fcbfd593"
-			},
-			"ap-southeast-1": {
-				"AMI": "ami-56e2ee04"
-			},
-			"ap-southeast-2": {
-				"AMI": "ami-af9ede95"
-			},
-			"us-west-2": {
-				"AMI": "ami-c15a52f1"
-			},
-			"us-west-1": {
-				"AMI": "ami-c1996685"
-			},
-			"eu-central-1": {
-				"AMI": "ami-38d2d625"
-			},
-			"sa-east-1": {
-				"AMI": "ami-b7e66faa"
-			}
-		}
+		"AWSAMIRegionMap": {
+            "AMI": {
+                "RHEL71HVM": "RHEL-7.1_HVM-20150803-x86_64-1-Hourly2-GP2"
+            },
+            "ap-northeast-1": {
+                "RHEL71HVM": "ami-4eee514e"
+            },
+            "ap-northeast-2": {
+                "RHEL71HVM": "ami-86c10fe8"
+            },
+            "ap-south-1": {
+                "RHEL71HVM": "ami-fcbfd593"
+            },
+            "ap-southeast-1": {
+                "RHEL71HVM": "ami-56e2ee04"
+            },
+            "ap-southeast-2": {
+                "RHEL71HVM": "ami-af9ede95"
+            },
+            "ca-central-1": {
+                "RHEL71HVM": "ami-b064d6d4"
+            },
+            "eu-central-1": {
+                "RHEL71HVM": "ami-38d2d625"
+            },
+            "eu-west-1": {
+                "RHEL71HVM": "ami-a42a7bd3"
+            },
+            "eu-west-2": {
+                "RHEL71HVM": "ami-e9343e8d"
+            },
+            "sa-east-1": {
+                "RHEL71HVM": "ami-b7e66faa"
+            },
+            "us-east-1": {
+                "RHEL71HVM": "ami-dbc96ab0"
+            },
+            "us-east-2": {
+                "RHEL71HVM": "ami-96164cf3"
+            },
+            "us-west-1": {
+                "RHEL71HVM": "ami-c1996685"
+            },
+            "us-west-2": {
+                "RHEL71HVM": "ami-c15a52f1"
+            }
+        }
 	},
 	"Resources": {
 		"ClusterLauncherSecurityGroup": {
@@ -417,10 +426,10 @@
 				},
 				"ImageId": {
 					"Fn::FindInMap": [
-						"ClusterLauncherAMI", {
+						"AWSAMIRegionMap", {
 							"Ref": "AWS::Region"
 						},
-						"AMI"
+						"RHEL71HVM"
 					]
 				},
 				"IamInstanceProfile": {

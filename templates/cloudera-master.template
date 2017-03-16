@@ -285,7 +285,7 @@
                     "KeyName": {
                         "Ref": "KeyName"
                     },
-                    "PrivSubCIDR": {
+                    "PrivateCIDR": {
                         "Ref": "PrivateSubnet1CIDR"
                     },
                     "PublicCIDR": {
