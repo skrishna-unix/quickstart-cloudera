@@ -1,12 +1,12 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "(000A) AWS Infrastructure Deployment for Cloudera Hadoop",
+	"Description": "AWS Infrastructure Deployment for Cloudera Hadoop",
  	"Metadata": {
 		"AWS::CloudFormation::Interface": {
     		"ParameterGroups": [
         		{
                     "Label": {
-                        "default": " VPC Network Configuration"
+                        "default": "Network Configuration"
                     },
                     "Parameters": [
                         "AvailabilityZones",
@@ -15,17 +15,16 @@
                         "PrivateSubnet2CIDR",
                         "PublicSubnet1CIDR",
                         "PublicSubnet2CIDR",
-                        "NATInstanceType"
+                        "RemoteAccessCIDR"                        
                     ]
                 },
                 {
                     "Label": {
-                        "default": " Cloudera Launcher Setup"
+                        "default": " Cloudera Launcher Configuration"
                     },
                     "Parameters": [
                         "KeyName",
-                        "ClusterLauncherType",
-                        "RemoteAccessCIDR"
+                        "ClusterLauncherType"
                     ]
                 },
                 {
@@ -43,9 +42,6 @@
                 },
                 "KeyName": {
                     "default": "Key Name"
-                },
-                "NATInstanceType": {
-                    "default": "NAT Instance Type"
                 },
                 "PrivateSubnet1CIDR": {
                     "default": "Private Subnet 1 CIDR"
@@ -111,7 +107,7 @@
 			"MinLength": "9",
 			"MaxLength": "18",
 			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-			"ConstraintDescription": "must be a valid CIDR range of the form x.x.x.x/x."
+			"ConstraintDescription": "Must be a valid CIDR range of the form x.x.x.x/x."
 		},
 		"KeyName": {
 			"Type": "AWS::EC2::KeyPair::KeyName",
@@ -138,22 +134,7 @@
 				"m4.xlarge",
 				"m4.large"	
 			]
-		},
-	  	"NATInstanceType": {
-            "AllowedValues": [
-                "t2.nano",
-                "t2.micro",
-                "t2.small",
-                "t2.medium",
-                "t2.large",
-                "m3.medium",
-                "m3.large",
-                "m4.large"
-            ],
-            "Default": "t2.small",
-            "Description": "Amazon EC2 instance type for the NAT Instances. This is only used if the region does not support NAT gateways.",
-            "Type": "String"
-        }
+		}
 	        
 	},
 	"Mappings": {
@@ -251,9 +232,6 @@
                     },
                     "KeyPairName": {
                         "Ref": "KeyName"
-                    },
-                    "NATInstanceType": {
-                        "Ref": "NATInstanceType"
                     },
                     "NumberOfAZs": "2",
                     "PrivateSubnet1ACIDR": {
