@@ -189,7 +189,9 @@
 					"IpProtocol": "udp",
 					"FromPort": "123",
 					"ToPort": "123",
-					"CidrIp": "0.0.0.0/0"
+					"CidrIp": {
+						"Ref": "RemoteAccessCIDR"
+					}
 				}, {
 					"IpProtocol": "tcp",
 					"FromPort": "1",
@@ -314,7 +316,11 @@
 						}, {
 							"Effect": "Allow",
 							"Action": [
-								"iam:CreateRole"
+								"iam:CreateRole",
+        						"iam:PutRolePolicy",
+              					"iam:CreateInstanceProfile",
+                   				"iam:AddRoleToInstanceProfile",
+                       			"iam:PassRole"
 							],
 							"Resource": [
 								"*"
@@ -322,71 +328,11 @@
 						}, {
 							"Effect": "Allow",
 							"Action": [
-								"iam:PutRolePolicy"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"iam:CreateInstanceProfile"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"iam:AddRoleToInstanceProfile"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"iam:PassRole"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"ec2:RevokeSecurityGroupEgress"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"ec2:AuthorizeSecurityGroupEgress"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"ec2:AuthorizeSecurityGroupIngress"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"ec2:CreateNetworkInterface"
-							],
-							"Resource": [
-								"*"
-							]
-						}, {
-							"Effect": "Allow",
-							"Action": [
-								"ec2:ModifyNetworkInterfaceAttribute"
+								"ec2:RevokeSecurityGroupEgress",
+        						"ec2:AuthorizeSecurityGroupEgress",
+              					"ec2:AuthorizeSecurityGroupIngress",
+                   				"ec2:CreateNetworkInterface",
+                       			"ec2:ModifyNetworkInterfaceAttribute"
 							],
 							"Resource": [
 								"*"
@@ -410,7 +356,42 @@
 			"Metadata": {
 				"AWS::CloudFormation::Init": {
 					"config": {
-						"files": {}
+						"files": {},
+      					"commands": {
+             				"01_download_download_script": {
+                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "BuildBucket" }, "/scripts/download.sh --output-document=/home/ec2-user/cloudera/download.sh"]]}
+                 			}, 
+             				"02_download_replace_script": {
+                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "BuildBucket" }, "/scripts/cfn-replace.sh --output-document=/home/ec2-user/cloudera/cfn-replace.sh"]]}
+                 			}, 
+             				"03_download_cleanup_script": {
+                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "BuildBucket" }, "/scripts/cleanup.sh --output-document=/home/ec2-user/cloudera/cleanup.sh"]]}
+                 			}, 
+             				"04_replace_public_subnet_id": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh PUBLICSUBNETID-CFN-REPLACE=", { "Ref": "PublicSubnet" }, " /home/ec2-user/cloudera/download.sh"]]}
+                   			},
+                      		"05_replace_private_subnet_id": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh PRIVATESUBNETID-CFN-REPLACE=", { "Ref": "PrivateSubnet" }, " /home/ec2-user/cloudera/download.sh"]]}
+                   			},
+                      		"06_replace_subnet_id": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh SUBNETID-CFN-REPLACE=", { "Ref": "PrivateSubnet" }, " /home/ec2-user/cloudera/download.sh"]]}
+                   			},
+                      		"07_replace_security_group": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh SECUTIRYGROUPIDS-CFN-REPLACE=", { "Ref": "ClusterLauncherSecurityGroup" }, " /home/ec2-user/cloudera/download.sh"]]}
+                   			},
+                      		"08_replace_keyname": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh KEYNAME-CFN-REPLACE=", { "Ref": "KeyName" }, " /home/ec2-user/cloudera/download.sh"]]}
+                   			},
+                      		"09_replace_hadoop_instance_count": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh HADOOPINSTANCE-COUNT-CFN-REPLACE=5"]]}
+                   			},
+                      		"10_replace_cluster_type": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh CLUSTERTYPE-REPLACE-ME=Advanced"]]}
+                   			},
+                      		"11_replace_hadoop_instance_type": {
+                 				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh HADOOPINSTANCE-TYPE-CFN-REPLACE=m4.large"]]}
+                   			}
+           				}
 					}
 				}
 			},
@@ -446,85 +427,35 @@
 					"Fn::Base64": {
 						"Fn::Join": [
 							"", [
-								"#!/bin/bash ",
+								"#!/bin/bash -e",
 								"\n",
+        						"export PATH=$PATH:/usr/local/aws/bin/ \n",
+        						"easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz \n",
 								"yum install wget python unzip java -y","\n",
 								"mkdir -p /home/ec2-user/cloudera/",
 								"\n",
-								"wget https://s3.amazonaws.com/", {
-									"Ref": "BuildBucket"
-								},
-								"/scripts/download.sh --output-document=/home/ec2-user/cloudera/download.sh ",
-								"\n",
-								"wget https://s3.amazonaws.com/", {
-									"Ref": "BuildBucket"
-								},
-								"/scripts/cfn-replace.sh --output-document=/home/ec2-user/cloudera/cfn-replace.sh ",
-								"\n",
-								"wget https://s3.amazonaws.com/", {
-									"Ref": "BuildBucket"
-								},
-								"/scripts/cleanup.sh --output-document=/home/ec2-user/cloudera/cleanup.sh ",
-								"\n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"PUBLICSUBNETID-CFN-REPLACE",
-								"=", {
-									"Ref": "PublicSubnet"
-								},
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"PRIVATESUBNETID-CFN-REPLACE",
-								"=", {
-									"Ref": "PrivateSubnet"
-								},
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"SUBNETID-CFN-REPLACE",
-								"=", {
-									"Ref": "PrivateSubnet"
-								},
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"SECUTIRYGROUPIDS-CFN-REPLACE",
-								"=", {
-									"Ref": "ClusterLauncherSecurityGroup"
-								},
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"KEYNAME-CFN-REPLACE",
-								"=", {
-									"Ref": "KeyName"
-								},
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"HADOOPINSTANCE-COUNT-CFN-REPLACE",
-								"=",
-								"5",
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"CLUSTERTYPE-REPLACE-ME",
-								"=Advanced",
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/cfn-replace.sh ",
-								"HADOOPINSTANCE-TYPE-CFN-REPLACE",
-								"=",
-								"m4.large",
-								" /home/ec2-user/cloudera/download.sh \n",
-								"/bin/sh /home/ec2-user/cloudera/download.sh",
+								"cfn-init -v --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource ClusterLauncherInstance ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+        						"/bin/sh /home/ec2-user/cloudera/download.sh",
 								" -b ", {
 									"Ref": "BuildBucket"
 								},
 								" > /home/ec2-user/install.log",
 								"\n",
-								"/bin/sh /home/ec2-user/cloudera/cleanup.sh \n",
-								"curl -X PUT -H 'Content-Type:' --data-binary '{\"Status\" : \"SUCCESS\",",
-								"\"Reason\" : \"The AWS-Cloudera Cluster Launcher is ready.\",",
-								"\"UniqueId\" : \"ClusterLauncher Complete\",",
-								"\"Data\" : \"Done\"}' ",
-								"\"", {
-									"Ref": "WebServerWaitHandle"
-								},
-								"\"\n"
+        						"cfn-signal -e $? -r \"The AWS Cloudera Cluster Launcher is ready\" '",
+                                {
+                                    "Ref": "WebServerWaitHandle"
+                                },
+                                "'\n",
+								"/bin/sh /home/ec2-user/cloudera/cleanup.sh \n"
 							]
 						]
 					}
