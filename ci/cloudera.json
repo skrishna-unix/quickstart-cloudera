@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "KeyName",
-        "ParameterValue": "cikey"
+        "ParameterValue": "$[alfred_getkeypair]"
     },
     {
         "ParameterKey": "RemoteAccessCIDR",
