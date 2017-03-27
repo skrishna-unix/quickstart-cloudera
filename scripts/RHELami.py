@@ -34,7 +34,7 @@ def main():
     parser.add_argument('-r', dest="region",metavar="REGION",required = True,
                               help='REGION to query AMI')
     parser.add_argument('-t', dest="type",metavar="AMI_TYPE",required = True,
-                              help='AMI Type (paravirtual,hvm)')
+                              help='AMI Type (hvm)')
 
     args = parser.parse_args()
     version = args.version

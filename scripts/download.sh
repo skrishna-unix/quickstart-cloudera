@@ -78,9 +78,7 @@ export AWS_SECRETACCESSKEY=$(curl -s http://169.254.169.254/latest/meta-data/iam
 export AWS_DEFAULT_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | ${JQ_COMMAND} '.region'  | sed 's/^"\(.*\)"$/\1/')
 export AWS_INSTANCEID=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | ${JQ_COMMAND} '.instanceId' | sed 's/^"\(.*\)"$/\1/' )
 export RHEL_VERSION_HVM=7.1
-export RHEL_VERSION_PVM=6.5
 export AWS_HVM_AMI=$(/usr/bin/python /home/ec2-user/cloudera/misc/RHELami.py -v ${RHEL_VERSION_HVM} -r ${AWS_DEFAULT_REGION} -t hvm)
-export AWS_PVM_AMI=$(/usr/bin/python /home/ec2-user/cloudera/misc/RHELami.py -v ${RHEL_VERSION_PVM} -r ${AWS_DEFAULT_REGION} -t paravirtual)
 
 # Replace these via CloudFormation User-Data
 export AWS_SUBNETID=SUBNETID-CFN-REPLACE
@@ -91,47 +89,12 @@ export AWS_KEYNAME=KEYNAME-CFN-REPLACE
 export AWS_CDH_INSTANCE=HADOOPINSTANCE-TYPE-CFN-REPLACE
 export AWS_CDH_COUNT=HADOOPINSTANCE-COUNT-CFN-REPLACE
 
-declare -A IsPVMSupported
 declare -A IsHVMSupported
 
-IsPVMSupported=( ["m3.xlarge"]=1
-				["m3.2xlarge"]=1
-				["m1.small"]=1
-				["m1.medium"]=1
-				["m1.large"]=1
-				["m1.xlarge"]=1
-				["c3.large"]=1
-				["c3.xlarge"]=1
-				["c3.2xlarge"]=1
-				["c3.4xlarge"]=1
-				["c3.8xlarge"]=1
-				["c1.medium"]=1
-				["c1.xlarge"]=1
-				["cc2.8xlarge"]=0
-				["g2.2xlarge"]=0
-				["cg1.4xlarge"]=0
-				["m2.xlarge"]=1
-				["m2.2xlarge"]=1
-				["m2.4xlarge"]=1
-				["cr1.8xlarge"]=0
-				["hi1.4xlarge"]=1
-				["hs1.8xlarge"]=1
-				["i2.xlarge"]=0
-				["i2.2xlarge"]=0
-				["i2.4xlarge"]=0
-				["i2.8xlarge"]=0
-				["r3.large"]=0
-				["r3.xlarge"]=0
-				["r3.2xlarge"]=0
-				["r3.4xlarge"]=0
-				["r3.8xlarge"]=0
-				["t1.micro"]=1
-				["t2.micro"]=0
-				["t2.small"]=0
-				["t2.medium"]=0
-)
-
-IsHVMSupported=( ["m3.xlarge"]=1
+IsHVMSupported=( ["m4.large"]=1
+				["m4.xlarge"]=1
+				["m4.2xlarge"]=1 
+				["m3.xlarge"]=1
 				["m3.xlarge"]=1
 				["m3.2xlarge"]=1
 				["m1.small"]=1
@@ -175,7 +138,8 @@ if [ -z ${ishvm} ]; then
 elif [ ${ishvm} -eq 1 ];then
 	export AWS_AMI=${AWS_HVM_AMI}
 else
-	export AWS_AMI=${AWS_PVM_AMI}
+	echo "ERROR: Supported AMI not found!"
+	exit 1
 fi
 
 # Escape / to keep sed happy
