@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 usage() {
 		cat <<EOF
@@ -186,7 +186,7 @@ export INSTANCEKEYPAIRESC=\\/home\\/ec2\\-user\\/cloudera\\-aws\\-quickstart\\-$
 
 # Pull bits from Cloudera repo
 yum-config-manager --add-repo http://archive.cloudera.com/director/redhat/7/x86_64/director/cloudera-director.repo
-yum install -y cloudera-director-server cloudera-director-client
+yum install -y cloudera-director-server-2.3.0-1.director230.p0.25.el7 cloudera-director-client-2.3.0-1.director230.p0.25.el7
 
 
 /usr/local/bin/aws  ec2 delete-key-pair --key-name aws-cloudera-quickstart-${CURRENT_DATE} \

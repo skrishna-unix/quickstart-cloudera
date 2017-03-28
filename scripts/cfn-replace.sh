@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -e
 
 # ------------------------------------------------------------------
 # Import variables from CloudFormation template into download.sh
