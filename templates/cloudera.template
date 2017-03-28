@@ -444,7 +444,12 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-        						"/bin/sh /home/ec2-user/cloudera/download.sh",
+        						"cfn-signal -e $? -r \"Downloaded artifacts for Cloudera Cluster Launcher setup\" '",
+                                {
+                                    "Ref": "WebServerDownloadWaitHandle"
+                                },
+                                "'\n",
+								"/bin/sh /home/ec2-user/cloudera/download.sh",
 								" -b ", {
 									"Ref": "BuildBucket"
 								},
@@ -462,7 +467,20 @@
 				}
 			}
 		},
-		"WebServerWaitHandle": {
+		"WebServerDownloadWaitHandle": {
+			"Type": "AWS::CloudFormation::WaitConditionHandle"
+		},
+		"WebServerDownloadWaitCondition": {
+			"Type": "AWS::CloudFormation::WaitCondition",
+			"DependsOn": "ClusterLauncherInstance",
+			"Properties": {
+				"Handle": {
+					"Ref": "WebServerDownloadWaitHandle"
+				},
+				"Timeout": "900"
+			}
+		},
+  		"WebServerWaitHandle": {
 			"Type": "AWS::CloudFormation::WaitConditionHandle"
 		},
 		"WebServerWaitCondition": {
