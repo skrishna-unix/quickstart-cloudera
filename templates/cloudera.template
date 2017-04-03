@@ -92,7 +92,7 @@
 			"ConstraintDescription": "Must be a valid CIDR range of the form x.x.x.x/x."
 		},
 		"RemoteAccessCIDR": {
-			"Description": "IP CIDR from which you are likely to SSH into the ClusterLauncher instance. Note: a value of 0.0.0.0/0 will allow access from ANY ip address",
+			"Description": "CIDR range from which you are likely to SSH into the ClusterLauncher instance. Note: a value of 0.0.0.0/0 will allow access from ANY ip address",
 			"Type": "String",
 			"MinLength": "9",
 			"MaxLength": "18",
@@ -293,8 +293,7 @@
 								"ec2:StartInstances",
 								"ec2:CreateSecurityGroup",
 								"ec2:CreatePlacementGroup",
-								"ec2:CreateSnapshot",
-								"*"
+								"ec2:CreateSnapshot"
 							],
 							"Resource": "*"
 						}, {
@@ -431,9 +430,8 @@
 								"\n",
         						"export PATH=$PATH:/usr/local/aws/bin/ \n",
         						"easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz \n",
-								"yum install wget python unzip java -y","\n",
-								"mkdir -p /home/ec2-user/cloudera/",
-								"\n",
+								"yum install wget python unzip java -y \n",
+								"mkdir -p /home/ec2-user/cloudera/ \n",
 								"cfn-init -v --stack ",
                                 {
                                     "Ref": "AWS::StackName"
