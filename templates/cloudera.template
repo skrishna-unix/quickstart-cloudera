@@ -31,7 +31,8 @@
                         "default": "AWS Quick Start Configuration"
                     },
                     "Parameters": [
-                        "BuildBucket"
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
                     ]
                 }
            	],
@@ -51,8 +52,11 @@
                 "PrivateCIDR": {
                     "default": "Private Subnet CIDR"
                 },
-                "BuildBucket": {
-                    "default": "Quick Start S3 Bucket Path"
+                "QSS3BucketName": {
+                    "default": "AWS Quick Start S3 Bucket Name"
+                },
+                "QSS3KeyPrefix": {
+                    "default": "AWS Quick Start S3 Key Prefix"
                 },
                 "RemoteAccessCIDR": {
                     "default": "Permitted IP range"
@@ -103,12 +107,21 @@
 			"Type": "AWS::EC2::KeyPair::KeyName",
 			"Description": "Name of an existing EC2 KeyPair. ClusterLauncher instance will launch with this KeyPair."
 		},
-		"BuildBucket": {
-			"Description": "S3 bucket containing templates and scripts [Don't change].",
-			"Type": "String",
-			"Default": "quickstart-reference/cloudera/latest"
-		},
-		"ClusterLauncherType": {
+		"QSS3BucketName": {
+            "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "AWS Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Default": "quickstart-reference",
+            "Description": "S3 bucket name for the AWS Quick Start assets. AWS Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Type": "String"
+        },
+        "QSS3KeyPrefix": {
+            "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+            "ConstraintDescription": "AWS Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "Default": "cloudera/latest",
+            "Description": "S3 key prefix for the AWS Quick Start assets. AWS Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "Type": "String"
+        },
+        "ClusterLauncherType": {
 			"Description": "Amazon EC2 instance type for the ClusterLauncher Instance.",
 			"Type": "String",
 			"Default": "m4.large",
@@ -282,7 +295,6 @@
 						"Statement": [{
 							"Effect": "Allow",
 							"Action": [
-								"s3:*",
 								"ec2:Describe*",
 								"ec2:AttachNetworkInterface",
 								"ec2:AttachVolume",
@@ -293,7 +305,26 @@
 								"ec2:StartInstances",
 								"ec2:CreateSecurityGroup",
 								"ec2:CreatePlacementGroup",
-								"ec2:CreateSnapshot"
+								"ec2:CreateSnapshot",
+        						"ec2:DescribeAvailabilityZones",
+								"ec2:DescribeImages",        
+								"ec2:DescribeInstanceStatus",        
+								"ec2:DescribeInstances",        
+								"ec2:DescribeKeyPairs",        
+								"ec2:DescribePlacementGroups",       
+								"ec2:DescribeRegions",       
+								"ec2:DescribeSecurityGroups",       
+								"ec2:DescribeSubnets",       
+								"ec2:TerminateInstances",       
+								"ec2:DescribeVolumes",       
+								"ec2:DescribeInstanceAttribute",       
+								"ec2:ModifyInstanceAttribute",
+        						"ec2:RevokeSecurityGroupEgress",
+        						"ec2:AuthorizeSecurityGroupEgress",
+              					"ec2:AuthorizeSecurityGroupIngress",
+                   				"ec2:CreateNetworkInterface",
+                       			"ec2:ModifyNetworkInterfaceAttribute",
+                          		"*"
 							],
 							"Resource": "*"
 						}, {
@@ -319,7 +350,9 @@
         						"iam:PutRolePolicy",
               					"iam:CreateInstanceProfile",
                    				"iam:AddRoleToInstanceProfile",
-                       			"iam:PassRole"
+                       			"iam:PassRole",
+                          		"iam:GetInstanceProfile",
+                            	"iam:PassRole"
 							],
 							"Resource": [
 								"*"
@@ -327,11 +360,24 @@
 						}, {
 							"Effect": "Allow",
 							"Action": [
-								"ec2:RevokeSecurityGroupEgress",
-        						"ec2:AuthorizeSecurityGroupEgress",
-              					"ec2:AuthorizeSecurityGroupIngress",
-                   				"ec2:CreateNetworkInterface",
-                       			"ec2:ModifyNetworkInterfaceAttribute"
+								"s3:GetObject",
+        						"s3:GetObjectTagging",
+        						"s3:ListBucket",
+              					"s3:*",
+        						"kms:DescribeKey",
+        						"sts:DecodeAuthorizationMessage"
+							],
+							"Resource": [
+								"*"
+							]
+						}, {
+							"Effect": "Allow",
+							"Action": [
+								"rds:CreateDBInstance",
+						        "rds:DeleteDBInstance",
+						        "rds:DescribeDBInstances",
+						        "rds:DescribeDBEngineVersions",
+						        "rds:DescribeDBSecurityGroups"
 							],
 							"Resource": [
 								"*"
@@ -358,13 +404,13 @@
 						"files": {},
       					"commands": {
              				"01_download_download_script": {
-                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "BuildBucket" }, "/scripts/download.sh --output-document=/home/ec2-user/cloudera/download.sh"]]}
+                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "QSS3BucketName" }, "/", { "Ref": "QSS3KeyPrefix" }, "/scripts/download.sh --output-document=/home/ec2-user/cloudera/download.sh"]]}
                  			}, 
              				"02_download_replace_script": {
-                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "BuildBucket" }, "/scripts/cfn-replace.sh --output-document=/home/ec2-user/cloudera/cfn-replace.sh"]]}
+                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "QSS3BucketName" }, "/", { "Ref": "QSS3KeyPrefix" }, "/scripts/cfn-replace.sh --output-document=/home/ec2-user/cloudera/cfn-replace.sh"]]}
                  			}, 
              				"03_download_cleanup_script": {
-                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "BuildBucket" }, "/scripts/cleanup.sh --output-document=/home/ec2-user/cloudera/cleanup.sh"]]}
+                   				"command": { "Fn::Join" : ["", ["wget https://s3.amazonaws.com/", { "Ref": "QSS3BucketName" }, "/", { "Ref": "QSS3KeyPrefix" }, "/scripts/cleanup.sh --output-document=/home/ec2-user/cloudera/cleanup.sh"]]}
                  			}, 
              				"04_replace_public_subnet_id": {
                  				"command": { "Fn::Join" : ["", ["/bin/sh /home/ec2-user/cloudera/cfn-replace.sh PUBLICSUBNETID-CFN-REPLACE=", { "Ref": "PublicSubnet" }, " /home/ec2-user/cloudera/download.sh"]]}
@@ -448,9 +494,7 @@
                                 },
                                 "'\n",
 								"/bin/sh /home/ec2-user/cloudera/download.sh",
-								" -b ", {
-									"Ref": "BuildBucket"
-								},
+								" -b ", { "Ref": "QSS3BucketName" }, "/", { "Ref": "QSS3KeyPrefix" }, 
 								" > /home/ec2-user/install.log",
 								"\n",
         						"cfn-signal -e $? -r \"The AWS Cloudera Cluster Launcher is ready\" '",

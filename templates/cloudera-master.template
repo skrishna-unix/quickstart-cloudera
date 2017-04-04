@@ -32,7 +32,8 @@
                         "default": "AWS Quick Start Configuration"
                     },
                     "Parameters": [
-                        "BuildBucket"
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
                     ]
                 }
            	],
@@ -55,8 +56,11 @@
                 "PublicSubnet2CIDR": {
                     "default": "Public Subnet 2 CIDR"
                 },
-                "BuildBucket": {
-                    "default": "Quick Start S3 Bucket Path"
+                "QSS3BucketName": {
+                    "default": "AWS Quick Start S3 Bucket Name"
+                },
+                "QSS3KeyPrefix": {
+                    "default": "AWS Quick Start S3 Key Prefix"
                 },
                 "RemoteAccessCIDR": {
                     "default": "Permitted IP range"
@@ -114,12 +118,21 @@
 			"Default": "home",
 			"Description": "Name of an existing EC2 KeyPair. ClusterLauncher instance will launch with this KeyPair."
 		},
-		"BuildBucket": {
-			"Description": "S3 bucket containing templates and scripts [Don't change].",
-			"Type": "String",
-			"Default": "quickstart-reference/cloudera/latest"
-		},
-		 "AvailabilityZones": {
+		"QSS3BucketName": {
+            "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "AWS Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Default": "quickstart-reference",
+            "Description": "S3 bucket name for the AWS Quick Start assets. AWS Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Type": "String"
+        },
+        "QSS3KeyPrefix": {
+            "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+            "ConstraintDescription": "AWS Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "Default": "cloudera/latest",
+            "Description": "S3 key prefix for the AWS Quick Start assets. AWS Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "Type": "String"
+        },
+        "AvailabilityZones": {
             "Description": "List of Availability Zones to use for the subnets in the VPC. Note: The logical order is preserved (2 AZs are used for this deployment)",
             "Type": "List<AWS::EC2::AvailabilityZone::Name>"
         },
@@ -215,7 +228,10 @@
                                 ]
                             },
                             {
-                                "Ref": "BuildBucket"
+                                "Ref": "QSS3BucketName"
+                            },
+                            {
+                                "Ref": "QSS3KeyPrefix"
                             },
                             "submodules/quickstart-aws-vpc/templates/aws-vpc.template"
                         ]
@@ -269,7 +285,10 @@
                                 ]
                             },
                             {
-                                "Ref": "BuildBucket"
+                                "Ref": "QSS3BucketName"
+                            },
+                            {
+                                "Ref": "QSS3KeyPrefix"
                             },
                             "templates/cloudera.template"
                         ]
@@ -294,8 +313,11 @@
                     "RemoteAccessCIDR": {
                         "Ref": "RemoteAccessCIDR"
                     },
-                    "BuildBucket": {
-                        "Ref": "BuildBucket"
+                    "QSS3BucketName": {
+                        "Ref": "QSS3BucketName"
+                    },
+                    "QSS3KeyPrefix": {
+                        "Ref": "QSS3KeyPrefix"
                     },
                     "PublicSubnet": {
                         "Fn::GetAtt": [
