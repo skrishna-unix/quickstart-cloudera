@@ -21,4 +21,4 @@ Deployment steps:
 3. [Configure](http://docs.aws.amazon.com/quickstart/latest/cloudera/step3.html) the cluster and EDH services.
 4. [Deploy](http://docs.aws.amazon.com/quickstart/latest/cloudera/step4.html) the EDH Cluster.
 
-The Quick Start provides parameters that you can set to customize your deployment. For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide].(http://docs.aws.amazon.com/quickstart/latest/cloudera/welcome.html)
+The Quick Start provides parameters that you can set to customize your deployment. For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](http://docs.aws.amazon.com/quickstart/latest/cloudera/welcome.html).
