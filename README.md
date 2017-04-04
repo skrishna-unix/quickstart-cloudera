@@ -4,11 +4,11 @@ This Quick Start helps you build a multi-node Cloudera Enterprise Data Hub (EDH)
 
 In this reference architecture, we support two options for deploying Cloudera's Enterprise Data Hub within an Amazon VPC. One option is to launch all the nodes within a public subnet providing direct Internet access. The second option is to deploy all the nodes within a private subnet. The reference deployment builds both a public and private subnet, and the cluster can be deployed in either subnet using the configuration file.
 
-EDH Cluster in a Public Subnet
+## EDH Cluster in a Public Subnet
 
 ![Quick Start Cloudera Architecture](https://docs.aws.amazon.com/quickstart/latest/cloudera/images/cloudera-public-subnet.png )
 
-EDH Cluster in a Private Subnet
+## EDH Cluster in a Private Subnet
 
 ![Quick Start Cloudera Architecture](https://docs.aws.amazon.com/quickstart/latest/cloudera/images/cloudera-private-subnet.png )
 
