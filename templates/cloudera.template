@@ -556,7 +556,8 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "/bin/sh /home/ec2-user/cloudera/cfn-replace.sh HADOOPINSTANCE-COUNT-CFN-REPLACE=5"
+                                            "/bin/sh /home/ec2-user/cloudera/cfn-replace.sh HADOOPINSTANCE-COUNT-CFN-REPLACE=5",
+                                            " /home/ec2-user/cloudera/download.sh"
                                         ]
                                     ]
                                 }
@@ -566,7 +567,8 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "/bin/sh /home/ec2-user/cloudera/cfn-replace.sh CLUSTERTYPE-REPLACE-ME=Advanced"
+                                            "/bin/sh /home/ec2-user/cloudera/cfn-replace.sh CLUSTERTYPE-REPLACE-ME=Advanced",
+                                            " /home/ec2-user/cloudera/download.sh"
                                         ]
                                     ]
                                 }
@@ -576,7 +578,8 @@
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "/bin/sh /home/ec2-user/cloudera/cfn-replace.sh HADOOPINSTANCE-TYPE-CFN-REPLACE=m4.large"
+                                            "/bin/sh /home/ec2-user/cloudera/cfn-replace.sh HADOOPINSTANCE-TYPE-CFN-REPLACE=m4.large",
+                                            " /home/ec2-user/cloudera/download.sh"
                                         ]
                                     ]
                                 }
