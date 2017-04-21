@@ -187,6 +187,13 @@ export INSTANCEKEYPAIRESC=\\/home\\/ec2\\-user\\/cloudera\\-aws\\-quickstart\\-$
 # Pull bits from Cloudera repo
 DIRECTOR_VERSION='2.3.0-1.director230.p0.25.el7'
 yum-config-manager --add-repo http://archive.cloudera.com/director/redhat/7/x86_64/director/cloudera-director.repo
+# Update yum repo file to point to specific version
+sed -i 's/2/2.3/g' /etc/yum.repos.d/cloudera-director.repo
+# Clean yum cache
+yum clean all
+# update cloudera-director yum repo
+yum update cloudera-director
+# Install director server and client
 yum install -y cloudera-director-server-${DIRECTOR_VERSION} cloudera-director-client-${DIRECTOR_VERSION}
 
 
