@@ -154,7 +154,7 @@ instances {
             owner: ${?USER}
         }
 
-        bootstrapScript: """#!/bin/sh
+        bootstrapScripts: [ """#!/bin/sh
 
 # This is an embedded bootstrap script that runs as root and can be used to customize
 # the instances immediately after boot and before any other Cloudera Director action
@@ -164,7 +164,8 @@ instances {
 echo 'Hello World!'
 exit 0
 
-"""
+""" ]
+
     }
 }
 
