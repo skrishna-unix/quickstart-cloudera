@@ -53,18 +53,18 @@ unzip  setup-default.zip
 export DIRECTOR_LATEST_VERSION=2.1.0
 AWS_SIMPLE_CONF=/home/ec2-user/cloudera/setup-default/aws.simple.conf
 AWS_REFERENCE_CONF=/home/ec2-user/cloudera/setup-default/aws.reference.conf
-wget https://s3.amazonaws.com/${BUILDBUCKET}/media/aws.simple.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_SIMPLE_CONF}
-wget https://s3.amazonaws.com/${BUILDBUCKET}/media/aws.reference.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_REFERENCE_CONF}
+wget https://s3.amazonaws.com/${BUILDBUCKET}media/aws.simple.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_SIMPLE_CONF}
+wget https://s3.amazonaws.com/${BUILDBUCKET}media/aws.reference.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_REFERENCE_CONF}
 
 for f in RHELami.py
 do
-   wget https://s3.amazonaws.com/${BUILDBUCKET}/scripts/$f --output-document=/home/ec2-user/cloudera/misc/$f
+   wget https://s3.amazonaws.com/${BUILDBUCKET}scripts/$f --output-document=/home/ec2-user/cloudera/misc/$f
 done
 
 
 wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip --output-document=/home/ec2-user/cloudera/aws/awscli-bundle.zip
-wget https://s3.amazonaws.com/${BUILDBUCKET}/media/jq --output-document=/home/ec2-user/cloudera/aws/jq
-wget https://s3.amazonaws.com/${BUILDBUCKET}/media/setup-default.zip --output-document=/home/ec2-user/cloudera/setup-default.zip
+wget https://s3.amazonaws.com/${BUILDBUCKET}media/jq --output-document=/home/ec2-user/cloudera/aws/jq
+wget https://s3.amazonaws.com/${BUILDBUCKET}media/setup-default.zip --output-document=/home/ec2-user/cloudera/setup-default.zip
 
 cd /home/ec2-user/cloudera/aws
 unzip awscli-bundle.zip
@@ -227,7 +227,7 @@ pip install virtualenv
 pip install -r requirements.txt
 
 
-wget https://s3.amazonaws.com/${BUILDBUCKET}/scripts/setupdefaults.sh --output-document=/home/ec2-user/cloudera/setup-default/setupdefaults.sh
+wget https://s3.amazonaws.com/${BUILDBUCKET}scripts/setupdefaults.sh --output-document=/home/ec2-user/cloudera/setup-default/setupdefaults.sh
 
 service cloudera-director-server start
 # Strange issues happen when cloudera-director-server isn't completely started

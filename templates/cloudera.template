@@ -115,10 +115,10 @@
             "Type": "String"
         },
         "QSS3KeyPrefix": {
-            "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
-            "ConstraintDescription": "AWS Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
-            "Default": "cloudera/latest",
-            "Description": "S3 key prefix for the AWS Quick Start assets. AWS Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "AllowedPattern": "^[0-9a-zA-Z-/]*$",
+            "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
+			"Default": "cloudera/latest/",
+            "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
             "Type": "String"
         },
         "RemoteAccessCIDR": {
@@ -423,64 +423,85 @@
         "ClusterLauncherInstance": {
             "Type": "AWS::EC2::Instance",
             "Metadata": {
+                "AWS::CloudFormation::Authentication": {
+                    "S3AccessCreds": {
+                        "type": "S3",
+                        "roleName": {
+                            "Ref": "ClusterLauncherInstanceRootRole"
+                        }
+                    }
+                },
                 "AWS::CloudFormation::Init": {
                     "config": {
-                        "files": {},
+                        "files": {
+                          	"/home/ec2-user/cloudera/download.sh": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            ".s3.amazonaws.com/",
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/download.sh"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000644",
+                                "owner": "root",
+                                "group": "root",
+                                "authentication": "S3AccessCreds"
+                            },
+                            "/home/ec2-user/cloudera/cfn-replace.sh": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            ".s3.amazonaws.com/",
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/cfn-replace.sh"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000644",
+                                "owner": "root",
+                                "group": "root",
+                                "authentication": "S3AccessCreds"
+                            },
+                            "/home/ec2-user/cloudera/cleanup.sh": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "https://",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            ".s3.amazonaws.com/",
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/cleanup.sh"
+                                        ]
+                                    ]
+                                },
+                                "mode": "000644",
+                                "owner": "root",
+                                "group": "root",
+                                "authentication": "S3AccessCreds"
+                            }
+                        },
                         "commands": {
-                            "01_download_download_script": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "wget https://s3.amazonaws.com/",
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            "/",
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "/scripts/download.sh --output-document=/home/ec2-user/cloudera/download.sh"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "02_download_replace_script": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "wget https://s3.amazonaws.com/",
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            "/",
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "/scripts/cfn-replace.sh --output-document=/home/ec2-user/cloudera/cfn-replace.sh"
-                                        ]
-                                    ]
-                                }
-                            },
-                            "03_download_cleanup_script": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "wget https://s3.amazonaws.com/",
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            "/",
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "/scripts/cleanup.sh --output-document=/home/ec2-user/cloudera/cleanup.sh"
-                                        ]
-                                    ]
-                                }
-                            },
                             "04_replace_public_subnet_id": {
                                 "command": {
                                     "Fn::Join": [
