@@ -650,7 +650,7 @@
                                 "#!/bin/bash -e",
                                 "\n",
                                 "export PATH=$PATH:/usr/local/aws/bin/ \n",
-                                "easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz \n",
+                                "easy_installhttp://cloudformation-examples.s3.us-east-1.amazonaws.com/aws-cfn-bootstrap-latest.tar.gz \n",
                                 "yum install wget python unzip java -y \n",
                                 "mkdir -p /home/ec2-user/cloudera/ \n",
                                 "cfn-init -v --stack ",

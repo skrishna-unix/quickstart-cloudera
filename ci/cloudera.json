@@ -14,5 +14,9 @@
     {
         "ParameterKey": "RemoteAccessCIDR",
         "ParameterValue": "10.0.0.0/32"
+    },
+    {
+        "ParameterKey": "QSS3BucketRegion",
+        "ParameterValue": "$[taskcat_current_region]"
     }
 ]
