@@ -460,13 +460,13 @@ Resources:
           - |
             #!/bin/bash -e
             export PATH=$PATH:/usr/local/aws/bin/ 
-            sudo easy_install http://cloudformation-examples.s3.us-east-1.amazonaws.com/aws-cfn-bootstrap-latest.tar.gz 
-            sudo yum install wget python unzip java -y 
+            easy_install http://cloudformation-examples.s3.us-east-1.amazonaws.com/aws-cfn-bootstrap-latest.tar.gz 
+            yum install wget python unzip java -y 
             mkdir -p /home/ec2-user/cloudera/ 
             cfn-init -v --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterLauncherInstance
-            cfn-signal -e $? -r "Downloaded artifacts for Cloudera Cluster Launcher setup" ${WebServerDownloadWaitHandle}
+            cfn-signal -e $? -r "Downloaded artifacts for Cloudera Cluster Launcher setup" "${WebServerDownloadWaitHandle}"
             /bin/sh /home/ec2-user/cloudera/download.sh -u ${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix} -b ${S3Bucket}/${QSS3KeyPrefix} > /home/ec2-user/install.log
-            cfn-signal -e $? -r "The AWS Cloudera Cluster Launcher is ready" ${WebServerWaitHandle}
+            cfn-signal -e $? -r "The AWS Cloudera Cluster Launcher is ready" "${WebServerWaitHandle}"
             /bin/sh /home/ec2-user/cloudera/cleanup.sh
           - S3Region:
               !If [
