@@ -5,6 +5,7 @@ usage() {
 		Usage: $0 [options]
 				-h print usage
 				-b S3 BuildBucket that contains scripts/templates/media dir
+				-u S3 URL to use when getting the scripts
 EOF
 		exit 1
 }
@@ -15,11 +16,13 @@ EOF
 
 
 
-while getopts ":h:b:" o; do
+while getopts ":h:b:u:" o; do
 		case "${o}" in
 				h) usage && exit 0
 						;;
 				b) BUILDBUCKET=${OPTARG}
+								;;
+				u) URL=${OPTARG}
 								;;
 				*)
 						usage
@@ -31,6 +34,7 @@ done
 
 VERSION=2.1.0
 BUILDBUCKET=$(echo ${BUILDBUCKET} | sed 's/"//g')
+URK=$(echo ${URL} | sed 's/"//g')
 
 
 # ------------------------------------------------------------------
@@ -53,18 +57,24 @@ unzip  setup-default.zip
 export DIRECTOR_LATEST_VERSION=2.1.0
 AWS_SIMPLE_CONF=/home/ec2-user/cloudera/setup-default/aws.simple.conf
 AWS_REFERENCE_CONF=/home/ec2-user/cloudera/setup-default/aws.reference.conf
-wget https://s3.amazonaws.com/${BUILDBUCKET}media/aws.simple.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_SIMPLE_CONF}
-wget https://s3.amazonaws.com/${BUILDBUCKET}media/aws.reference.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_REFERENCE_CONF}
+AWS s3 cp s3://${BUILDBUCKET}media/aws.simple.conf.${DIRECTOR_LATEST_VERSION} ${AWS_SIMPLE_CONF}
+AWS s3 cp s3://${BUILDBUCKET}media/aws.reference.conf.${DIRECTOR_LATEST_VERSION} ${AWS_REFERENCE_CONF}
+
+#wget https://${URL}/${BUILDBUCKET}media/aws.simple.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_SIMPLE_CONF}
+#wget https://${URL}/${BUILDBUCKET}media/aws.reference.conf.${DIRECTOR_LATEST_VERSION} --output-document=${AWS_REFERENCE_CONF}
 
 for f in RHELami.py
 do
-   wget https://s3.amazonaws.com/${BUILDBUCKET}scripts/$f --output-document=/home/ec2-user/cloudera/misc/$f
+   AWS s3 cp s3://${BUILDBUCKET}scripts/$f /home/ec2-user/cloudera/misc/$f
+	 #wget https://${URL}/${BUILDBUCKET}scripts/$f --output-document=/home/ec2-user/cloudera/misc/$f
 done
 
 
-wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip --output-document=/home/ec2-user/cloudera/aws/awscli-bundle.zip
-wget https://s3.amazonaws.com/${BUILDBUCKET}media/jq --output-document=/home/ec2-user/cloudera/aws/jq
-wget https://s3.amazonaws.com/${BUILDBUCKET}media/setup-default.zip --output-document=/home/ec2-user/cloudera/setup-default.zip
+wget https://s3.us-east-1.amazonaws.com/aws-cli/awscli-bundle.zip --output-document=/home/ec2-user/cloudera/aws/awscli-bundle.zip
+AWS s3 cp s3://${BUILDBUCKET}media/jq /home/ec2-user/cloudera/aws/jq
+AWS s3 cp s3://${BUILDBUCKET}media/setup-default.zip /home/ec2-user/cloudera/setup-default.zip
+#wget https://${URL}/${BUILDBUCKET}media/jq --output-document=/home/ec2-user/cloudera/aws/jq
+#wget https://${URL}/${BUILDBUCKET}media/setup-default.zip --output-document=/home/ec2-user/cloudera/setup-default.zip
 
 cd /home/ec2-user/cloudera/aws
 unzip awscli-bundle.zip
@@ -227,7 +237,8 @@ pip install virtualenv
 pip install -r requirements.txt
 
 
-wget https://s3.amazonaws.com/${BUILDBUCKET}scripts/setupdefaults.sh --output-document=/home/ec2-user/cloudera/setup-default/setupdefaults.sh
+AWS s3 cp s3://${BUILDBUCKET}scripts/setupdefaults.sh /home/ec2-user/cloudera/setup-default/setupdefaults.sh
+# wget https://${URL}/${BUILDBUCKET}scripts/setupdefaults.sh --output-document=/home/ec2-user/cloudera/setup-default/setupdefaults.sh
 
 service cloudera-director-server start
 # Strange issues happen when cloudera-director-server isn't completely started

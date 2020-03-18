@@ -161,33 +161,33 @@ Resources:
         Ref: VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: '22'
-          ToPort: '22'
+          FromPort: 22
+          ToPort: 22
           CidrIp:
             Ref: RemoteAccessCIDR
         - IpProtocol: udp
-          FromPort: '123'
-          ToPort: '123'
+          FromPort: 123
+          ToPort: 123
           CidrIp:
             Ref: RemoteAccessCIDR
         - IpProtocol: tcp
-          FromPort: '1'
-          ToPort: '65535'
+          FromPort: 1
+          ToPort: 65535
           CidrIp:
             Ref: PrivateCIDR
         - IpProtocol: tcp
-          FromPort: '1'
-          ToPort: '65535'
+          FromPort: 1
+          ToPort: 65535
           CidrIp:
             Ref: PublicCIDR
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: '1'
-          ToPort: '65535'
+          FromPort: 1
+          ToPort: 65535
           CidrIp: 0.0.0.0/0
         - IpProtocol: udp
-          FromPort: '1'
-          ToPort: '65535'
+          FromPort: 1
+          ToPort: 65535
           CidrIp: 0.0.0.0/0
   ClusterLauncherEIP:
     Type: AWS::EC2::EIP
@@ -201,7 +201,7 @@ Resources:
       Description: Interface for ClusterLauncher Instance
       GroupSet:
         - Ref: ClusterLauncherSecurityGroup
-      SourceDestCheck: 'true'
+      SourceDestCheck: true
       Tags:
         - Key: Network
           Value: Public (Cloudera)
@@ -456,37 +456,30 @@ Resources:
       InstanceType:
         Ref: ClusterLauncherType
       UserData:
-        Fn::Base64:
-          Fn::Join:
-            - ''
-            - - '#!/bin/bash -e'
-              - "\n"
-              - "export PATH=$PATH:/usr/local/aws/bin/ \n"
-              - "easy_installhttp://cloudformation-examples.s3.us-east-1.amazonaws.com/aws-cfn-bootstrap-latest.tar.gz
-                \n"
-              - "yum install wget python unzip java -y \n"
-              - "mkdir -p /home/ec2-user/cloudera/ \n"
-              - 'cfn-init -v --stack '
-              - Ref: AWS::StackName
-              - ' --resource ClusterLauncherInstance '
-              - ' --region '
-              - Ref: AWS::Region
-              - "\n"
-              - cfn-signal -e $? -r "Downloaded artifacts for Cloudera Cluster Launcher
-                setup" '
-              - Ref: WebServerDownloadWaitHandle
-              - "'\n"
-              - '/bin/sh /home/ec2-user/cloudera/download.sh'
-              - ' -b '
-              - Ref: QSS3BucketName
-              - '/'
-              - Ref: QSS3KeyPrefix
-              - ' > /home/ec2-user/install.log'
-              - "\n"
-              - cfn-signal -e $? -r "The AWS Cloudera Cluster Launcher is ready" '
-              - Ref: WebServerWaitHandle
-              - "'\n"
-              - "/bin/sh /home/ec2-user/cloudera/cleanup.sh \n"
+        Fn::Base64: !Sub
+          - |
+            #!/bin/bash -e
+            export PATH=$PATH:/usr/local/aws/bin/ 
+            sudo easy_install http://cloudformation-examples.s3.us-east-1.amazonaws.com/aws-cfn-bootstrap-latest.tar.gz 
+            sudo yum install wget python unzip java -y 
+            mkdir -p /home/ec2-user/cloudera/ 
+            cfn-init -v --stack ${AWS::StackName} --region ${AWS::Region} --resource ClusterLauncherInstance
+            cfn-signal -e $? -r "Downloaded artifacts for Cloudera Cluster Launcher setup" ${WebServerDownloadWaitHandle}
+            /bin/sh /home/ec2-user/cloudera/download.sh -u ${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix} -b ${S3Bucket}/${QSS3KeyPrefix} > /home/ec2-user/install.log
+            cfn-signal -e $? -r "The AWS Cloudera Cluster Launcher is ready" ${WebServerWaitHandle}
+            /bin/sh /home/ec2-user/cloudera/cleanup.sh
+          - S3Region:
+              !If [
+                UsingDefaultBucket,
+                !Ref 'AWS::Region',
+                !Ref QSS3BucketRegion,
+              ]
+            S3Bucket:
+              !If [
+                UsingDefaultBucket,
+                !Sub '${QSS3BucketName}-${AWS::Region}',
+                !Ref QSS3BucketName,
+              ]
   WebServerDownloadWaitHandle:
     Type: AWS::CloudFormation::WaitConditionHandle
   WebServerDownloadWaitCondition:
