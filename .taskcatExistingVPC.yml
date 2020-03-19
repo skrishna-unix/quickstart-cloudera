@@ -14,8 +14,8 @@ tests:
       PrivateSubnet: subnet-0dbb136f56a82cf3d
       PublicCIDR: 10.0.128.0/20
       PublicSubnet: subnet-0aca7739512f5f901
-      QSS3BucketName: tcat-0eab2dca75865eb1b038a256aa258635-ap-northeast-1
-      QSS3BucketRegion: ap-northeast-1
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
       QSS3KeyPrefix: quickstart-cloudera/
       RemoteAccessCIDR: 10.0.0.0/32
       VPC: vpc-0506bf9a674af5de7

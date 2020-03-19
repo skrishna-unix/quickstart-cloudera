@@ -203,6 +203,8 @@ Resources:
             - Outputs.PublicSubnet1ID
         QSS3BucketName:
           Ref: QSS3BucketName
+        QSS3BucketRegion:
+          Ref: QSS3BucketRegion
         QSS3KeyPrefix:
           Ref: QSS3KeyPrefix
         RemoteAccessCIDR:
